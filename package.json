@@ -5,6 +5,8 @@
   "main": "compile.js",
   "dependencies": {
     "handlebars": "^4.0.5",
+    "marked": "^0.3.6",
+    "traverse": "^0.6.6",
     "yamljs": "^0.2.8"
   },
   "devDependencies": {},
