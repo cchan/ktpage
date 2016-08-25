@@ -1,9 +1,9 @@
 # ktpage
 
-## How to use the templater
+Content comes from `content/clive.yml`. HTML markup happens in `src/template.hbs`.
+Themes are in `src/themes`. Output goes to `dist/index.html`.
 
-Content comes from `content.yml`. HTML markup happens in `template.hbs`.
-Themes are in `/themes`.
+## How to use the templater
 
 You need [NodeJS](https://nodejs.org) installed and in `PATH` first.
 
@@ -11,4 +11,3 @@ You need [NodeJS](https://nodejs.org) installed and in `PATH` first.
     cd ktpage
     npm install
     node compile.js
-
