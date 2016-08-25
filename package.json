@@ -4,13 +4,16 @@
   "description": "",
   "main": "compile.js",
   "dependencies": {
+    "glob-copy": "^0.1.0",
     "handlebars": "^4.0.5",
     "marked": "^0.3.6",
+    "mkdirp": "^0.5.1",
     "traverse": "^0.6.6",
     "yamljs": "^0.2.8"
   },
   "devDependencies": {},
   "scripts": {
+    "start": "node compile.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
