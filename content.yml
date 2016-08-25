@@ -1,0 +1,23 @@
+title: Clive Chan
+subtitle: ~web developer~
+theme: splash1
+sections:
+  about:
+    header: About Me
+    content: |
+      I am a wonderful person.
+      
+      On Tuesdays, when I'm not busy saving the world, I walk my neighbor's
+      dog. Occasionally I am involved in subterranean baseball, and enjoy
+      candlelit dinners with me, myself, and I. I have met Michelangelo, and
+      though he's alright, I could do a decidedly better job.
+  awards:
+    header: Awards and Accomplishments
+    content: |
+      It is very rare that I ever encounter difficulty in life.
+      
+      I have won oodles of prizes and awards. Among them are the following
+      highly illustrious prizes:
+      - Ansari X Prize
+      - Pulitzer Prize
+      - Prizes Prize

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+    <title>{{title}}</title>
+    <!-- waldo@clive.io-->
+    <!-- You seem to have found Waldo.-->
+    <meta name="description" content="{desc}">
+    <meta name="author" content="{author} - built with help from KTByte.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
+    <link rel="stylesheet" href="{{theme}}.css">
+  </head>
+  <body>
+    <nav>
+      {{#each sections}}
+      <a href="{{@key}}"></a>
+      {{/each}}
+    </nav>
+    <header>
+      <header>
+        <h1>{{title}}</h1>
+      </header>
+      <article>
+        {{subtitle}}
+      </article>
+    </header>
+    {{#each sections}}
+    <section id="{{@key}}">
+      <header>
+        <h2>{{header}}</h2>
+      </header>
+      <article>
+        <p>{{content}}</p>
+      </article>
+    </section>
+    {{/each}}
+    <footer>[some link to ktbyte]</footer>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
+  </body>
+</html>
