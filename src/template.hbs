@@ -9,25 +9,31 @@
     <!-- waldo@clive.io-->
     <!-- You seem to have found Waldo.-->
     <meta name="description" content="{{description}}">
-    <meta name="author" content="{{author}} - built with help from KTByte.com">
+    <meta name="author" content="{{author}} - built with KTByte.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
     <link rel="stylesheet" href="{{theme}}.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
   </head>
   <body>
-    <nav>
-      {{#each sections}}
-      <a href="{{@key}}"></a>
-      {{/each}}
-    </nav>
     <header>
+      <h1 id="logo">
+        <a href="#splash">{{title}}</a>
+      </h1>
+      <nav>
+        <a href="#splash">Home</a>
+        {{#each sections}}
+        <a href="#{{@key}}">{{header}}</a>
+        {{/each}}
+      </nav>
+    </header>
+    <section id="splash">
       <header>
-        <h1>{{title}}</h1>
+        <h2>{{title}}</h2>
       </header>
       <article>
         {{subtitle}}
       </article>
-    </header>
+    </section>
     {{#each sections}}
     <section id="{{@key}}">
       <header>
