@@ -26,27 +26,31 @@ mkdirp('./dist')
     if typeof x is "string" and x.includes '\n'
       marked(x)
   
-  tasks = new Map [
-    ['html', fs.readFileAsync './src/template.hbs'
-      .then (file) ->
-        # Read the template and compile it as a Handlebars template
-        template = Handlebars.compile file.toString()
-        
-        fs.writeFile './dist/index.html', template(content)
-    ],
-    ['sass', fs.readFileAsync './src/themes/' + theme + '.sass'
-      .then (file) ->
-        template = Handlebars.compile file.toString()
-        
-        sassRender
-          data: template(content)
-          indentedSyntax: true
-      .then (css) -> fs.writeFile './dist/' + theme + '.css', css.css
-    ],
-    ['js', cp './src/themes/' + theme + '.js', './dist']
-  ]
+  tasks =
+    html:
+      fs.readFileAsync './src/template.hbs'
+        .then (file) ->
+          # Read the HTML template and compile it as a Handlebars template
+          template = Handlebars.compile file.toString()
+          # And write it to the file
+          fs.writeFile './dist/index.html', template(content)
+    
+    sass:
+      fs.readFileAsync './src/themes/' + theme + '.sass'
+        .then (file) ->
+          # Read the Sass styles and compile it as a Handlebars template
+          template = Handlebars.compile file.toString()
+          # Render it as CSS
+          sassRender
+            data: template(content)
+            indentedSyntax: true
+        # and output it to file
+        .then (css) -> fs.writeFile './dist/' + theme + '.css', css.css
+    
+    js:
+      cp './src/themes/' + theme + '.js', './dist'
 
-  tasks.forEach (promise, key) ->
+  for own key, promise of tasks
       promise.error (err) ->
         console.error 'Error in task ' + key + ':'
         console.error err.stack
