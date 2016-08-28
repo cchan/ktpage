@@ -8,33 +8,39 @@ mkdirp = P.promisify(require('mkdirp'));
 cp = P.promisify(require('glob-copy'));
 sassRender = P.promisify(require('node-sass').render);
 
+contentfile = 'clive'
 theme = 'splash1'
 
 # Write the resulting output to index.html, and copy over the files.
-mkdirp('dist')
+mkdirp('./dist')
 .catch (x) ->
   console.error "Failure in dir creation:"
   console.error x
 .then ->
+  # Read the content from the YAML file (could be from any other source, like a database)
+  # and process it into a JavaScript object.
+  content = YAML.load './content/' + contentfile + '.yml'
+  
+  # Traverse the entire content object and compile Markdown for all multiline strings.
+  traverse(content).forEach (x) ->
+    if typeof x is "string" and x.includes '\n'
+      marked(x)
+  
   tasks = new Map [
-    ['html', fs.readFileAsync 'src/template.hbs'
+    ['html', fs.readFileAsync './src/template.hbs'
       .then (file) ->
         # Read the template and compile it as a Handlebars template
         template = Handlebars.compile file.toString()
-
-        # Read the content from the YAML file (could be from any other source, like a database)
-        # and process it into a JavaScript object.
-        content = YAML.load 'content/clive.yml'
-
-        # Traverse the entire content object and compile Markdown for all multiline strings.
-        traverse(content).forEach (x) ->
-          if typeof x is "string" and x.includes '\n'
-            marked(x)
         
         fs.writeFile './dist/index.html', template(content)
     ],
-    ['sass', sassRender
-        file: './src/themes/' + theme + '.sass'
+    ['sass', fs.readFileAsync './src/themes/' + theme + '.sass'
+      .then (file) ->
+        template = Handlebars.compile file.toString()
+        
+        sassRender
+          data: template(content)
+          indentedSyntax: true
       .then (css) -> fs.writeFile './dist/' + theme + '.css', css.css
     ],
     ['js', cp './src/themes/' + theme + '.js', './dist']

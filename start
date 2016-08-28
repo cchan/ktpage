@@ -1,2 +1,2 @@
-nodemon compile.coffee --watch "src/**/*.*" &
-browser-sync start --server --serveStatic "./dist" --files "./dist/*" &
+nodemon --watch "src/**/*.*" --watch "content/**/*.*" compile.coffee &
+browser-sync start --server --serveStatic "./dist" --online false --files "./dist/*" &

@@ -1,3 +1,8 @@
+$gradient: linear-gradient(to bottom right, {{colors.[0]}}, {{colors.[1]}})
+
+body
+  margin: 0
+
 body>header
   position: fixed
   top: 0
@@ -24,4 +29,39 @@ body>header
         background-color: #333
 
 #splash
-  border: solid 1px #000
+  padding-top: 50vh
+  background-color: {{colors.[0]}}
+  background: $gradient
+  height: 50vh
+  text-align: center
+  color: white
+  header
+    font-size: 3em
+    margin-top: -2em
+    h2
+      margin: 0
+  article
+    font-size: 2em
+
+section
+  padding: 2em
+  header
+    text-align: center
+    h2
+      margin: 0
+  article
+    width: 60%
+    margin: 0 auto
+    p
+      text-indent: 1em
+
+{{#each sections}}
+#{{@key}}
+  background-color: {{color}}
+{{/each}}
+
+footer
+  text-align: center
+  padding: 2em
+  background-color: {{colors.[0]}}
+  color: lighten({{colors.[0]}}, 5%)

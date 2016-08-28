@@ -3,9 +3,13 @@ subtitle: ~web developer~
 author: Clive Chan (cc@clive.io)
 description: A website.
 theme: splash1
+colors:
+  - '#0cc'
+  - '#00c'
 sections:
   about:
     header: About Me
+    color: '#c9c'
     content: |
       I am a wonderful person.
       
@@ -15,6 +19,7 @@ sections:
       though he's alright, I could do a decidedly better job.
   awards:
     header: Awards and Accomplishments
+    color: '#cc0'
     content: |
       It is very rare that I ever encounter difficulty in life.
       
