@@ -8,8 +8,7 @@ mkdirp      = P.promisify(require('mkdirp'))
 cp          = P.promisify(require('glob-copy'))
 Sass        = require('sass.js')
 
-contentfile = 'clive'
-theme       = 'splash1'
+contentfile = process.argv[2] || throw new Error 'No YAML content file provided'
 
 contactTypes =
   email:    prefix: 'mailto:',                  fa: 'envelope'
@@ -36,6 +35,8 @@ mkdirp './dist'
   content = YAML.load './content/' + contentfile + '.yml'
   
   content.contact = processContacts content.contact
+  
+  if content.theme? then theme = content.theme else return Promise.reject 'no theme specified in YAML'
   
   # Traverse the entire content object and compile Markdown for all multiline strings.
   traverse(content).forEach (x) ->

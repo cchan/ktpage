@@ -2,3 +2,4 @@ node_modules
 dist
 compile.js
 .sass-cache
+npm-debug.log
