@@ -14,8 +14,10 @@ You need [git](https://git-scm.com/) and [NodeJS](https://nodejs.org) installed 
 
 ## How this is going to work:
 
-1. The user gives us some basic starter information, either in YAML or as something more accessible.
-2. The user chooses the theme and customizes some colors, also in YAML.
-3. We compile that into a starter template and hand it to the user.
-4. The user can edit the YAML or the template in any way they like in the left panel of their screen.
-5. These edits will be (reasonably) instantly reflected on the right panel of their screen and on the live website.
+1. The user gives us some basic starter information, either in YAML or as something more accessible like a webform.
+(the theme and color customization also happens in YAML.) This is on the left panel of their screen.
+2. We compile that in (reasonably) real time and hand the finished HTML result to the user, and also update the live website.
+3. Later on, add the feature that advanced students may edit the generated HTML directly.
+
+(Could the Sass be precompiled, leaving in the templates, so there's not this huge emscripten Sass.js thing?
+I'd have to modify it to replace the templates with random uniquely identifiable valid values and then re-replace after compilation.)
