@@ -6,7 +6,7 @@ marked      = require('marked')
 fs          = P.promisifyAll(require('fs'))
 mkdirp      = P.promisify(require('mkdirp'))
 cp          = P.promisify(require('glob-copy'))
-sassRender  = P.promisify(require('node-sass').render)
+Sass        = require('sass.js')
 
 contentfile = 'clive'
 theme       = 'splash1'
@@ -25,8 +25,8 @@ processContacts = (contact) ->
         if 0 is id.search /https?\:\/\// then id                # If they gave the url, use that
         else contactTypes[type].prefix + encodeURIComponent(id) # Otherwise, figure out the url
       fa: contactTypes[type]?.fa || console.error "can't find fontawesome lookup for " + type
-    else if contact.link? and contact.fa? then contact
-    else console.error "incomplete contact spec for " + type + ": need `link` and `fa` properties"
+    else if id.link? and id.fa? then {link: id.link, fa: id.fa}
+    else console.error "incomplete contact spec for `" + type + "`: need `link` and `fa` properties"
 
 # Write the resulting output to index.html, and copy over the files.
 mkdirp './dist'
@@ -56,11 +56,13 @@ mkdirp './dist'
         # Read the Sass styles and compile it as a Handlebars template
         template = Handlebars.compile file.toString()
         # Render it as CSS
-        sassRender
-          data: template(content)
-          indentedSyntax: true
+        new Promise (resolve, reject) ->
+          Sass.compile template(content), {indentedSyntax: true}, (result) ->
+            if result.status is 0 then resolve result.text
+            else reject result
+      
       # and output it to file
-      .then (css) -> fs.writeFile './dist/' + theme + '.css', css.css
+      .then (css) -> fs.writeFile './dist/' + theme + '.css', css
   
   js:
     cp './src/themes/' + theme + '.js', './dist'
