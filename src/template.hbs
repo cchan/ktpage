@@ -11,7 +11,7 @@
     <meta name="description" content="{{description}}">
     <meta name="author" content="{{author}} - built at KTByte.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
-    <link rel="stylesheet" href="{{theme}}.css">
+    <style>{{{__templater.css}}}</style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
   </head>
   <body>
@@ -33,7 +33,7 @@
       </header>
       <article>
         <aside>
-        {{#each contact}}
+        {{#each __templater.contact}}
           <a href="{{link}}" title="{{@key}}">
             <i class="fa fa-{{fa}}" aria-hidden="true"></i>
           </a>
@@ -54,6 +54,6 @@
     <footer>Built at KTByte.com</footer>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
-    <script src="{{theme}}.js"></script>
+    <script>{{{__templater.js}}}</script>
   </body>
 </html>

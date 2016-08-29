@@ -1,0 +1,21 @@
+<textarea id="output" style="width: 90vw; height: 90vh;">Just a sec - compiling...
+Look at your console output to see if anything went wrong.</textarea>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js">/*$*/</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.6.1/js-yaml.min.js">/*jsyaml*/</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sass.js/0.9.12/sass.min.js">/*Sass*/</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.js">/*Handlebars*/</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js">/*marked*/</script>
+<script src="bundle.js"></script>
+<script>
+$.get('https://cdnjs.cloudflare.com/ajax/libs/sass.js/0.9.12/sass.worker.min.js', function(data){
+  var bloburl = window.URL.createObjectURL(new Blob([data], {type: 'text/javascript'}))
+  window.sass = new Sass(bloburl)
+  
+  $.get('content/clive.yml', function(data){
+    compileYAML(data, function(html){
+      $('#output').text(html);
+    });
+  })
+
+});
+</script>
