@@ -40,8 +40,26 @@ body>header
     margin-top: -2em
     h2
       margin: 0
+    p
+      font-size: 0.5em
   article
-    font-size: 2em
+    aside
+      a
+        display: inline-block
+        color: #ccc
+        text-decoration: none
+        padding: 1em
+        margin: 0
+        transition: color 0.1s, padding 0.1s
+        i
+          font-size: 2em
+          transition: font-size 0.1s
+        vertical-align: top
+        &:hover
+          color: #fff
+          padding: 0.75em
+          i
+            font-size: 2.5em
 
 section
   padding: 2em

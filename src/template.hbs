@@ -29,9 +29,16 @@
     <section id="splash">
       <header>
         <h2>{{title}}</h2>
+        <p>{{summary}}</p>
       </header>
       <article>
-        {{subtitle}}
+        <aside>
+        {{#each contact}}
+          <a href="{{link}}" title="{{@key}}">
+            <i class="fa fa-{{fa}}" aria-hidden="true"></i>
+          </a>
+        {{/each}}
+        </aside>
       </article>
     </section>
     {{#each sections}}

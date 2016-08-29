@@ -1,11 +1,19 @@
 title: Clive Chan
-subtitle: ~web developer~
+summary: Master antimatter magician.
 author: Clive Chan (cc@clive.io)
 description: A website.
 theme: splash1
 colors:
   - '#0cc'
   - '#00c'
+contact:
+  email: cc@clive.io
+  twitter: @cchan
+  github: cchan
+  linkedin: http://linkedin.com/in/cchan3141
+  website:
+    fa:   globe
+    link: https://clive.io
 sections:
   about:
     header: About Me
