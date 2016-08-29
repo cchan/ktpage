@@ -14,10 +14,11 @@
     "yamljs": "^0.2.8"
   },
   "devDependencies": {
-    "longjohn": "^0.2.11"
+    "browser-sync": "^2.14.0",
+    "nodemon": "^1.10.2"
   },
   "scripts": {
-    "start": "node compile.js",
+    "start": "./start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
