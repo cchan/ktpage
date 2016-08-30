@@ -1,7 +1,7 @@
 # ktpage
 
 Content comes from `content/clive.yml`. HTML markup happens in `src/template.hbs`.
-Themes are in `src/themes`. Output goes to `dist/index.html`.
+Themes are in `src/themes`.
 
 ## How to use the templater
 

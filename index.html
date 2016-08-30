@@ -1,5 +1,7 @@
-<textarea id="output" style="width: 90vw; height: 90vh;">Just a sec - compiling...
-Look at your console output to see if anything went wrong.</textarea>
+<div id="out">loading yaml...</div>
+<textarea id="yaml" style="width: 45vw; height: 90vh;">Just a sec - retrieving your stuff.
+If anything goes wrong, it'll console.error.</textarea>
+<iframe id="output" style="width: 45vw; height: 90vh;">Your browser does not support iframes. :'(</iframe>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js">/*$*/</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.6.1/js-yaml.min.js">/*jsyaml*/</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sass.js/0.9.12/sass.min.js">/*Sass*/</script>
@@ -7,15 +9,43 @@ Look at your console output to see if anything went wrong.</textarea>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js">/*marked*/</script>
 <script src="bundle.js"></script>
 <script>
+function out(text, disposition = 0){
+  if(disposition > 0) $("#out").css({color:'green'});
+  else if(disposition < 0) $("#out").css({color:'red'});
+  else $("#out").css({color:'darkyellow'});
+  $("#out").text(text);
+}
+
 $.get('https://cdnjs.cloudflare.com/ajax/libs/sass.js/0.9.12/sass.worker.min.js', function(data){
   var bloburl = window.URL.createObjectURL(new Blob([data], {type: 'text/javascript'}))
-  window.sass = new Sass(bloburl)
+  window.sass = new Sass(bloburl);
   
   $.get('content/clive.yml', function(data){
-    compileYAML(data, function(html){
-      $('#output').text(html);
-    });
-  })
-
+    $("#yaml").val(data).keypress();
+  });
+  
+  window.cooldownActive = false; //0.5sec cooldown between compiles
+  $('#yaml').on('keypress', function(){
+    if(cooldownActive) return;
+    cooldownActive = true;
+    document.getElementById('output').src = 'about:blank';
+    out('compiling html...', 0);
+    try{
+      compileYAML($(this).val(), function(html){
+        document.getElementById('output').src = 'about:blank';
+        document.getElementById('output').contentDocument.write(html);
+        out('compiled html', 1);
+        setTimeout(function(){
+          cooldownActive = false;
+        }, 500);
+      });
+    }catch(e){
+      out('compile error', -1);
+      
+      setTimeout(function(){
+        cooldownActive = false;
+      }, 500);
+    }
+  });
 });
 </script>
