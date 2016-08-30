@@ -1,4 +1,7 @@
-<div id="out">loading yaml...</div>
+<div>
+<button id="compilebtn">Compile</button>
+<div id="out" style="display:inline-block">loading yaml...</div>
+</div>
 <textarea id="yaml" style="width: 45vw; height: 90vh;">Just a sec - retrieving your stuff.
 If anything goes wrong, it'll console.error.</textarea>
 <iframe id="output" style="width: 45vw; height: 90vh;">Your browser does not support iframes. :'(</iframe>
@@ -16,36 +19,47 @@ function out(text, disposition = 0){
   $("#out").text(text);
 }
 
+function recompile(){
+  var iframe = document.getElementById('output');
+  return new Promise(function(resolve,reject){
+    out('compiling html...', 0);
+    compileYAML($('#yaml').val(), function(html){
+      iframe.src = 'about:blank';
+      iframe.onload = function(){
+        iframe.contentDocument.write(html);
+        out('compiled html', 1);
+        resolve();
+      };
+    });
+  }).catch(function(e){
+    out('Error.', -1);
+    console.error(e.stack);
+  });
+}
+
 $.get('https://cdnjs.cloudflare.com/ajax/libs/sass.js/0.9.12/sass.worker.min.js', function(data){
   var bloburl = window.URL.createObjectURL(new Blob([data], {type: 'text/javascript'}))
   window.sass = new Sass(bloburl);
   
   $.get('content/clive.yml', function(data){
-    $("#yaml").val(data).keypress();
+    $("#yaml").val(data);
+    recompile();
   });
   
+  $('#compilebtn').click(recompile);
+  
   window.cooldownActive = false; //0.5sec cooldown between compiles
-  $('#yaml').on('keypress', function(){
-    if(cooldownActive) return;
+  window.calledDuringCooldown = false;
+  $('#yaml').on('keydown', function(){
+    if(cooldownActive) return calledDuringCooldown = true;
     cooldownActive = true;
-    document.getElementById('output').src = 'about:blank';
-    out('compiling html...', 0);
-    try{
-      compileYAML($(this).val(), function(html){
-        document.getElementById('output').src = 'about:blank';
-        document.getElementById('output').contentDocument.write(html);
-        out('compiled html', 1);
-        setTimeout(function(){
-          cooldownActive = false;
-        }, 500);
-      });
-    }catch(e){
-      out('compile error', -1);
-      
+    recompile().then(function(){
       setTimeout(function(){
         cooldownActive = false;
+        if(calledDuringCooldown) recompile();
+        calledDuringCooldown = false;
       }, 500);
-    }
+    });
   });
 });
 </script>
