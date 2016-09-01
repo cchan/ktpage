@@ -1,94 +1,101 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function() {
-  var traverse,
+  var contactTypes, hbsCache, hbsFetch, hbsFetchOne, processContacts, traverse,
     hasProp = {}.hasOwnProperty;
 
   traverse = require('traverse');
 
-  window.compileYAML = function(yaml) {
-    var contactTypes, content, htmlpromise, jspromise, processContacts, sasspromise;
-    content = jsyaml.safeLoad(yaml);
-    content.__templater = {};
-    if (!content.theme) {
-      console.error('no theme specified in YAML');
+  hbsCache = {};
+
+  hbsFetchOne = function(url) {
+    return Promise.resolve($.get(url)).then(function(data) {
+      return Handlebars.compile(data);
+    });
+  };
+
+  hbsFetch = function(type) {
+    if (hbsCache[type] != null) {
+      return hbsCache[type];
+    } else {
+      return hbsCache[type] = Promise.resolve([hbsFetchOne("src/views/" + type + ".hbs"), hbsFetchOne("src/styles/" + type + ".sass"), hbsFetchOne("src/scripts/" + type + ".js")]);
     }
-    contactTypes = {
-      email: {
-        prefix: 'mailto:',
-        fa: 'envelope'
-      },
-      twitter: {
-        prefix: 'https://twitter.com/',
-        fa: 'twitter'
-      },
-      github: {
-        prefix: 'https://github.com/',
-        fa: 'github'
-      },
-      facebook: {
-        prefix: 'https://facebook.com/',
-        fa: 'facebook'
-      },
-      linkedin: {
-        prefix: 'https://linkedin.com/in/',
-        fa: 'linkedin'
+  };
+
+  contactTypes = {
+    email: {
+      prefix: 'mailto:',
+      fa: 'envelope'
+    },
+    twitter: {
+      prefix: 'https://twitter.com/',
+      fa: 'twitter'
+    },
+    github: {
+      prefix: 'https://github.com/',
+      fa: 'github'
+    },
+    facebook: {
+      prefix: 'https://facebook.com/',
+      fa: 'facebook'
+    },
+    linkedin: {
+      prefix: 'https://linkedin.com/in/',
+      fa: 'linkedin'
+    }
+  };
+
+  processContacts = function(contact) {
+    var id, ref, results, type;
+    results = [];
+    for (type in contact) {
+      if (!hasProp.call(contact, type)) continue;
+      id = contact[type];
+      if (contactTypes.hasOwnProperty(type)) {
+        results.push({
+          link: 0 === id.search(/https?\:\/\//) ? id : contactTypes[type].prefix + encodeURIComponent(id),
+          fa: ((ref = contactTypes[type]) != null ? ref.fa : void 0) || console.error("can't find fontawesome lookup for " + type)
+        });
+      } else if ((id.link != null) && (id.fa != null)) {
+        results.push({
+          link: id.link,
+          fa: id.fa
+        });
+      } else {
+        results.push(console.error("incomplete contact spec for `" + type + "`: need `link` and `fa` properties"));
       }
-    };
-    processContacts = function(contact) {
-      var id, ref, results, type;
-      results = [];
-      for (type in contact) {
-        if (!hasProp.call(contact, type)) continue;
-        id = contact[type];
-        if (contactTypes.hasOwnProperty(type)) {
-          results.push({
-            link: 0 === id.search(/https?\:\/\//) ? id : contactTypes[type].prefix + encodeURIComponent(id),
-            fa: ((ref = contactTypes[type]) != null ? ref.fa : void 0) || console.error("can't find fontawesome lookup for " + type)
-          });
-        } else if ((id.link != null) && (id.fa != null)) {
-          results.push({
-            link: id.link,
-            fa: id.fa
-          });
-        } else {
-          results.push(console.error("incomplete contact spec for `" + type + "`: need `link` and `fa` properties"));
-        }
-      }
-      return results;
-    };
-    content.__templater.contact = processContacts(content.contact);
+    }
+    return results;
+  };
+
+  window.compileYAML = function(yaml) {
+    var content;
+    content = jsyaml.safeLoad(yaml);
+    if (!content.template.type) {
+      console.error('no template.type specified in YAML');
+    }
     traverse(content).forEach(function(x) {
       if (typeof x === "string" && x.includes('\n')) {
         return marked(x);
       }
     });
-    htmlpromise = Promise.resolve($.get("src/views/" + content.template.type + ".hbs")).then(function(data) {
-      return Handlebars.compile(data);
-    })["catch"](function(err) {
-      return console.error('HTML template loading error:', err.stack || err);
-    });
-    sasspromise = Promise.resolve($.get("src/styles/" + content.template.type + ".sass")).then(function(data) {
+    content.__templater = {};
+    content.__templater.contact = processContacts(content.contact);
+    return hbsFetch(content.template.type).spread(function(htmlhbs, sasshbs, jshbs) {
       return new Promise(function(resolve, reject) {
-        return sass.compile(Handlebars.compile(data)(content), {
+        return sass.compile(sasshbs(content), {
           indentedSyntax: true
         }, function(sassresult) {
           if (sassresult.status !== 0) {
             return reject(sassresult.formatted);
           } else {
-            return resolve(sassresult.text);
+            return resolve([htmlhbs, sassresult.text, jshbs]);
           }
         });
       });
-    })["catch"](function(err) {
-      return console.error('Sass loading error:', err.stack || err);
-    });
-    jspromise = Promise.resolve($.get("src/scripts/" + content.template.type + ".js"))["catch"](function(err) {
-      return console.error('JavaScript loading error:', err.stack || err);
-    });
-    return Promise.all([htmlpromise, sasspromise, jspromise]).spread(function(htmltemplate, css, js) {
+    }).spread(function(htmlhbs, css, jshbs) {
       content.__templater.css = css;
-      content.__templater.js = js;
-      return htmltemplate(content);
+      content.__templater.js = jshbs(content);
+      return htmlhbs(content);
     });
   };
 

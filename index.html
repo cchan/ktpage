@@ -24,6 +24,7 @@ function recompile(){
   var iframe = document.getElementById('output');
   out('compiling html...', 0);
   return compileYAML($('#yaml').val()).then(function(html){
+    out('compiled html');
     return new Promise(function(resolve, reject){
       iframe.src = 'about:blank';
       iframe.onload = function(){
@@ -32,7 +33,7 @@ function recompile(){
       };
     });
   }).delay(100).then(function(){
-    out('compiled html', 1);
+    out('rendered html', 1);
   }).catch(function(e){
     out('Error.', -1);
     console.error(e.stack || e);
