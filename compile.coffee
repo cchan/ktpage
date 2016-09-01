@@ -36,6 +36,8 @@ processContacts = (contact) ->
     else console.error "incomplete contact spec for `" + type + "`: need `link` and `fa` properties"
 
 window.compileYAML = (yaml) ->
+  if typeof yaml != 'string' then throw new TypeError 'No YAML string provided to compileYAML'
+  
   # Read the content from the YAML file (could be from any other source, like a database)
   # and process it into a JavaScript object.
   content = jsyaml.safeLoad yaml

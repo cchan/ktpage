@@ -2,17 +2,20 @@
 <button id="compilebtn">Compile</button>
 <div id="out" style="display:inline-block">loading yaml...</div>
 </div>
-<textarea id="yaml" style="width: 35vw; height: 90vh;">Just a sec - retrieving your stuff.
-If anything goes wrong, it'll console.error.</textarea>
-<iframe id="output" style="width: 60vw; height: 90vh;">Your browser does not support iframes. :'(</iframe>
+<div id="yaml" style="width: 35vw; height: 90vh; display: inline-block;">Just a sec - retrieving your stuff.
+If anything goes wrong, it'll console.error.</div>
+<iframe id="output" style="width: 60vw; height: 90vh; border: 0">Your browser does not support iframes. :'(</iframe>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.4.5/bluebird.min.js" integrity="sha256-EhtBaIu4T1I7QNcIu9WddRSg41PmWvYlnGCB9uzGEc4=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous">/*$*/</script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.6.1/js-yaml.min.js" integrity="sha256-tvANaUGcQTLkCS9wHnLZhBFVfIWQJpm98WOpykjD+eo=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sass.js/0.9.12/sass.min.js" integrity="sha256-V4zQIN32pN3ROc9eNuTabL6yGs4TlbGETUoTrk3DzWw=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js" integrity="sha256-rMOSOM5HDzVEMoVZTv2189+RKSTSgY5ZKfTfap7q2zE=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js" integrity="sha256-mJAzKDq6kSoKqZKnA6UNLtPaIj8zT2mFnWu/GSouhgQ=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/ace.js" integrity="sha256-xx76EmQ2A+LP9GzPIVjY5UDJJMbR/BSiTvMWi0as4/I=" crossorigin="anonymous"></script>
 <script src="bundle.js"></script>
 <script>
+var editor;
+
 function out(text, disposition = 0){
   if(disposition > 0) $("#out").css({color:'green'});
   else if(disposition < 0) $("#out").css({color:'red'});
@@ -23,7 +26,7 @@ function out(text, disposition = 0){
 function recompile(){
   var iframe = document.getElementById('output');
   out('compiling html...', 0);
-  return compileYAML($('#yaml').val()).then(function(html){
+  return compileYAML(editor.getValue()).then(function(html){
     out('compiled html', 1);
     var doc = iframe.contentDocument; // http://stackoverflow.com/a/13638249/1181387
     iframe.contentDocument.open();
@@ -36,25 +39,26 @@ function recompile(){
   });
 }
 
-$.get('https://cdnjs.cloudflare.com/ajax/libs/sass.js/0.9.12/sass.worker.min.js', function(data){
+
+P.resolve($.get('https://cdnjs.cloudflare.com/ajax/libs/sass.js/0.9.12/sass.worker.min.js')).then(function(data){
   var bloburl = window.URL.createObjectURL(new Blob([data], {type: 'text/javascript'}))
   window.sass = new Sass(bloburl);
   
-  $.get('content/clive.yml', function(data){
-    $("#yaml").val(data);
-    recompile();
-  });
+  return $.get('content/clive.yml');
+}).then(function(data){
+  $('#yaml').html(data);
   
-  $('#compilebtn').click(recompile);
+  editor = ace.edit('yaml');
+  editor.setTheme('ace/theme/twilight');
+  editor.getSession().setMode('ace/mode/yaml');
   
   //0.5sec cooldown between compiles
   var cooldownActive = false;
   var calledDuringCooldown = false; //but if it's called during the cooldown make sure to call it right away
-  
   var oldVal;
-  $('#yaml').on('change textInput input', function(){
-    if (this.value == oldVal) return;
-    else oldVal = this.value;
+  editor.getSession().on('change', function(e){
+    if (editor.getValue() == oldVal) return;
+    else oldVal = editor.getValue();
     
     if(cooldownActive) return calledDuringCooldown = true;
     else cooldownActive = true;
@@ -67,5 +71,9 @@ $.get('https://cdnjs.cloudflare.com/ajax/libs/sass.js/0.9.12/sass.worker.min.js'
       }, 500);
     });
   });
+  
+  $('#compilebtn').click(recompile);
+  recompile();
 });
+
 </script>
