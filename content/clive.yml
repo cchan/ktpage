@@ -2,7 +2,9 @@ title: Clive Chan
 summary: Master antimatter magician.
 author: Clive Chan (cc@clive.io)
 description: A website.
-theme: splash1
+template:
+  type: onepage
+  nav: top
 colors:
   - '#0cc'
   - '#00c'

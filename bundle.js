@@ -62,12 +62,12 @@
         return marked(x);
       }
     });
-    htmlpromise = Promise.resolve($.get('src/template.hbs')).then(function(data) {
+    htmlpromise = Promise.resolve($.get("src/views/" + content.template.type + ".hbs")).then(function(data) {
       return Handlebars.compile(data);
     })["catch"](function(err) {
       return console.error('HTML template loading error:', err.stack || err);
     });
-    sasspromise = Promise.resolve($.get('src/themes/' + content.theme + '.sass')).then(function(data) {
+    sasspromise = Promise.resolve($.get("src/styles/" + content.template.type + ".sass")).then(function(data) {
       return new Promise(function(resolve, reject) {
         return sass.compile(Handlebars.compile(data)(content), {
           indentedSyntax: true
@@ -82,7 +82,7 @@
     })["catch"](function(err) {
       return console.error('Sass loading error:', err.stack || err);
     });
-    jspromise = Promise.resolve($.get('src/themes/' + content.theme + '.js'))["catch"](function(err) {
+    jspromise = Promise.resolve($.get("src/scripts/" + content.template.type + ".js"))["catch"](function(err) {
       return console.error('JavaScript loading error:', err.stack || err);
     });
     return Promise.all([htmlpromise, sasspromise, jspromise]).spread(function(htmltemplate, css, js) {

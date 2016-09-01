@@ -31,12 +31,12 @@ window.compileYAML = (yaml) ->
   traverse(content).forEach (x) -> marked(x) if typeof x is "string" and x.includes '\n'
 
   htmlpromise =
-  Promise.resolve $.get 'src/template.hbs'
+  Promise.resolve $.get "src/views/#{content.template.type}.hbs"
   .then (data) -> Handlebars.compile data    # Read the HTML template and compile it as a Handlebars template
   .catch (err) -> console.error 'HTML template loading error:', err.stack || err
 
   sasspromise =
-  Promise.resolve $.get 'src/themes/' + content.theme + '.sass'
+  Promise.resolve $.get "src/styles/#{content.template.type}.sass"
   .then (data) ->
     new Promise (resolve, reject) ->
       sass.compile Handlebars.compile(data)(content), {indentedSyntax: true}, (sassresult) -> # Use the read Sass, compile and populate it as a Handlebars template, and render it as CSS
@@ -45,10 +45,10 @@ window.compileYAML = (yaml) ->
   .catch (err) -> console.error 'Sass loading error:', err.stack || err
 
   jspromise =
-  Promise.resolve $.get 'src/themes/' + content.theme + '.js'
+  Promise.resolve $.get "src/scripts/#{content.template.type}.js"
   .catch (err) -> console.error 'JavaScript loading error:', err.stack || err
 
-  return Promise.all [htmlpromise, sasspromise, jspromise]
+  Promise.all [htmlpromise, sasspromise, jspromise]
   .spread (htmltemplate, css, js) ->
     content.__templater.css = css
     content.__templater.js = js
