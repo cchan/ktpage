@@ -5,11 +5,12 @@
 <textarea id="yaml" style="width: 45vw; height: 90vh;">Just a sec - retrieving your stuff.
 If anything goes wrong, it'll console.error.</textarea>
 <iframe id="output" style="width: 45vw; height: 90vh;">Your browser does not support iframes. :'(</iframe>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js">/*$*/</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.6.1/js-yaml.min.js">/*jsyaml*/</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sass.js/0.9.12/sass.min.js">/*Sass*/</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.js">/*Handlebars*/</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js">/*marked*/</script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.4.5/bluebird.min.js" integrity="sha256-EhtBaIu4T1I7QNcIu9WddRSg41PmWvYlnGCB9uzGEc4=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous">/*$*/</script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.6.1/js-yaml.min.js" integrity="sha256-tvANaUGcQTLkCS9wHnLZhBFVfIWQJpm98WOpykjD+eo=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sass.js/0.9.12/sass.min.js" integrity="sha256-V4zQIN32pN3ROc9eNuTabL6yGs4TlbGETUoTrk3DzWw=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js" integrity="sha256-rMOSOM5HDzVEMoVZTv2189+RKSTSgY5ZKfTfap7q2zE=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js" integrity="sha256-mJAzKDq6kSoKqZKnA6UNLtPaIj8zT2mFnWu/GSouhgQ=" crossorigin="anonymous"></script>
 <script src="bundle.js"></script>
 <script>
 function out(text, disposition = 0){
@@ -21,19 +22,20 @@ function out(text, disposition = 0){
 
 function recompile(){
   var iframe = document.getElementById('output');
-  return new Promise(function(resolve,reject){
-    out('compiling html...', 0);
-    compileYAML($('#yaml').val(), function(html){
+  out('compiling html...', 0);
+  return compileYAML($('#yaml').val()).then(function(html){
+    return new Promise(function(resolve, reject){
       iframe.src = 'about:blank';
       iframe.onload = function(){
         iframe.contentDocument.write(html);
-        out('compiled html', 1);
         resolve();
       };
     });
+  }).delay(100).then(function(){
+    out('compiled html', 1);
   }).catch(function(e){
     out('Error.', -1);
-    console.error(e.stack);
+    console.error(e.stack || e);
   });
 }
 

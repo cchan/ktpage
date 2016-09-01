@@ -5,8 +5,8 @@
 
   traverse = require('traverse');
 
-  window.compileYAML = function(yaml, cb) {
-    var contactTypes, content, processContacts;
+  window.compileYAML = function(yaml) {
+    var contactTypes, content, htmlpromise, jspromise, processContacts, sasspromise;
     content = jsyaml.safeLoad(yaml);
     content.__templater = {};
     if (!content.theme) {
@@ -62,24 +62,33 @@
         return marked(x);
       }
     });
-    $.get('src/template.hbs', function(data) {
-      var html;
-      html = Handlebars.compile(data);
-      return $.get('src/themes/' + content.theme + '.sass', function(data) {
-        var sasstemplate;
-        sasstemplate = Handlebars.compile(data);
-        return sass.compile(sasstemplate(content), {
+    htmlpromise = Promise.resolve($.get('src/template.hbs')).then(function(data) {
+      return Handlebars.compile(data);
+    })["catch"](function(err) {
+      return console.error('HTML template loading error:', err.stack || err);
+    });
+    sasspromise = Promise.resolve($.get('src/themes/' + content.theme + '.sass')).then(function(data) {
+      return new Promise(function(resolve, reject) {
+        return sass.compile(Handlebars.compile(data)(content), {
           indentedSyntax: true
-        }, function(arg) {
-          var css;
-          css = arg.text;
-          return $.get('src/themes/' + content.theme + '.js', function(data) {
-            content.__templater.js = data;
-            content.__templater.css = css;
-            return cb(html(content));
-          });
+        }, function(sassresult) {
+          if (sassresult.status !== 0) {
+            return reject(sassresult.formatted);
+          } else {
+            return resolve(sassresult.text);
+          }
         });
       });
+    })["catch"](function(err) {
+      return console.error('Sass loading error:', err.stack || err);
+    });
+    jspromise = Promise.resolve($.get('src/themes/' + content.theme + '.js'))["catch"](function(err) {
+      return console.error('JavaScript loading error:', err.stack || err);
+    });
+    return Promise.all([htmlpromise, sasspromise, jspromise]).spread(function(htmltemplate, css, js) {
+      content.__templater.css = css;
+      content.__templater.js = js;
+      return htmltemplate(content);
     });
   };
 
