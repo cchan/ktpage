@@ -1,5 +1,10 @@
 traverse = require 'traverse'
 
+# http://code-maven.com/handlebars-conditionals
+Handlebars.registerHelper 'if_eq', (a, b, opts) ->
+  if a == b then opts.fn this
+  else opts.inverse this
+
 hbsCache = {}
 hbsFetchOne = (url) ->
   return Promise.resolve $.get url

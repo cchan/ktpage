@@ -4,10 +4,11 @@ author: Clive Chan (cc@clive.io)
 description: A website.
 template:
   type: onepage
-  nav: top
+  nav: floating
 colors:
   - '#0cc'
   - '#00c'
+titlefont: Montserrat
 contact:
   email: cc@clive.io
   twitter: '@cchan'

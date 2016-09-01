@@ -3,7 +3,9 @@ $gradient: linear-gradient(to bottom right, {{colors.[0]}}, {{colors.[1]}})
 body
   margin: 0
 
+{{#if_eq template.nav 'top'}}
 body>header
+  font-family: {{titlefont}}
   position: fixed
   top: 0
   left: 0
@@ -27,6 +29,33 @@ body>header
       transition: background-color 0.5s
       &:hover
         background-color: #333
+{{/if_eq}}
+
+{{#if_eq template.nav 'floating'}}
+body>header
+  position: fixed
+  top: 1em
+  left: 1em
+  color: white
+  #logo
+    display: none
+  nav
+    float: right
+    opacity: 0.6
+    transition: opacity 0.5s
+    &:hover
+      opacity: 1
+    a
+      color: inherit
+      text-decoration: none
+      padding: 1em
+      display: block
+      text-align: center
+      background-color: rgba(0,0,0,0.7)
+      transition: background-color 0.5s
+      &:hover
+        background-color: rgba(0,0,0,0.3)
+{{/if_eq}}
 
 #splash
   padding-top: 50vh
