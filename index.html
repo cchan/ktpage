@@ -48,11 +48,18 @@ $.get('https://cdnjs.cloudflare.com/ajax/libs/sass.js/0.9.12/sass.worker.min.js'
   
   $('#compilebtn').click(recompile);
   
-  window.cooldownActive = false; //0.5sec cooldown between compiles
-  window.calledDuringCooldown = false;
-  $('#yaml').on('keydown', function(){
+  //0.5sec cooldown between compiles
+  var cooldownActive = false;
+  var calledDuringCooldown = false; //but if it's called during the cooldown make sure to call it right away
+  
+  var oldVal;
+  $('#yaml').on('change textInput input', function(){
+    if (this.value == oldVal) return;
+    else oldVal = this.value;
+    
     if(cooldownActive) return calledDuringCooldown = true;
-    cooldownActive = true;
+    else cooldownActive = true;
+    
     recompile().then(function(){
       setTimeout(function(){
         cooldownActive = false;
